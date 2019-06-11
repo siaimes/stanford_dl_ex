@@ -9,6 +9,14 @@
 % ''Hedonic prices and the demand for clean air''
 % J. Environ. Economics & Management, vol.5, 81-102, 1978.
 %
+clear
+
+% Using functions
+% functions = [false, false];
+% functions = [true, false];
+functions = [false, true];
+% functions = [true, true];
+
 addpath ../common
 addpath ../common/minFunc_2012/minFunc
 addpath ../common/minFunc_2012/minFunc/compiled
@@ -34,18 +42,23 @@ test.y = data(end,401:end);
 m=size(train.X,2);
 n=size(train.X,1);
 
-% Initialize the coefficient vector theta to random values.
-theta = rand(n,1);
+options = struct('MaxIter', 200);
 
 % Run the minFunc optimizer with linear_regression.m as the objective.
 %
 % TODO:  Implement the linear regression objective and gradient computations
 % in linear_regression.m
 %
-tic;
-options = struct('MaxIter', 200);
-theta = minFunc(@linear_regression, theta, options, train.X, train.y);
-fprintf('Optimization took %f seconds.\n', toc);
+% Set functions(1) as true to run your looping over code.
+if functions(1) == true
+    % Initialize the coefficient vector theta to random values.
+    theta = rand(n,1);
+%     % Gradient Checking
+%     average_error = grad_check(@linear_regression, theta, train.X, train.y)
+    tic;
+    theta = minFunc(@linear_regression, theta, options, train.X, train.y);
+    time1 = toc;
+end
 
 % Run minFunc with linear_regression_vec.m as the objective.
 %
@@ -54,12 +67,27 @@ fprintf('Optimization took %f seconds.\n', toc);
 % Compare the running time for your linear_regression.m and
 % linear_regression_vec.m implementations.
 %
-% Uncomment the lines below to run your vectorized code.
-%Re-initialize parameters
-%theta = rand(n,1);
-%tic;
-%theta = minFunc(@linear_regression_vec, theta, options, train.X, train.y);
-%fprintf('Optimization took %f seconds.\n', toc);
+% Set functions(2) as true to run your vectorized code.
+if functions(2) == true
+    % Initialize the coefficient vector theta to random values.
+    theta = rand(n,1);
+%     % Gradient Checking
+%     average_error = grad_check(@linear_regression_vec, theta, train.X, train.y)
+    tic;
+    theta = minFunc(@linear_regression_vec, theta, options, train.X, train.y);
+    time2 = toc;
+end
+
+% print the running time.
+if exist('time1','var') && exist('time2','var')
+    fprintf('Optimization took %f %f seconds respectively.\n', time1, time2);
+elseif exist('time1','var')
+    fprintf('Optimization took %f seconds.\n', time1);
+elseif exist('time2','var')
+    fprintf('Optimization took %f seconds.\n', time2);
+else
+    error('arg errer!');
+end
 
 % Plot predicted prices and actual prices from training set.
 actual_prices = train.y;

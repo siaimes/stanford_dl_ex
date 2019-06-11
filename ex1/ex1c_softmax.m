@@ -1,3 +1,5 @@
+clear
+
 addpath ../common
 addpath ../common/minFunc_2012/minFunc
 addpath ../common/minFunc_2012/minFunc/compiled
@@ -24,20 +26,23 @@ n=size(train.X,1);
 
 % Train softmax classifier using minFunc
 options = struct('MaxIter', 200);
+lambda = 1e-3; % Weight Decay
 
 % Initialize theta.  We use a matrix where each column corresponds to a class,
 % and each row is a classifier coefficient for that class.
 % Inside minFunc, theta will be stretched out into a long vector (theta(:)).
 % We only use num_classes-1 columns, since the last column is always assumed 0.
-theta = rand(n,num_classes-1)*0.001;
-
+% theta = rand(n,num_classes-1)*0.001;
+theta = rand(n,num_classes)*0.001;
 % Call minFunc with the softmax_regression_vec.m file as objective.
 %
 % TODO:  Implement batch softmax regression in the softmax_regression_vec.m
 % file using a vectorized implementation.
 %
+% % Gradient Checking
+% average_error = grad_check(@softmax_regression_vec, theta(:), lambda, train.X, train.y)
 tic;
-theta(:)=minFunc(@softmax_regression_vec, theta(:), options, train.X, train.y);
+theta(:)=minFunc(@softmax_regression_vec, theta(:), options, lambda, train.X, train.y);
 fprintf('Optimization took %f seconds.\n', toc);
 theta=[theta, zeros(n,1)]; % expand theta to include the last class.
 

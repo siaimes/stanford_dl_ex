@@ -6,11 +6,11 @@ function [f,g] = logistic_regression_vec(theta, X,y)
   %       X(i,j) is the i'th coordinate of the j'th example.
   %   y - The label for each example.  y(j) is the j'th example's label.
   %
-  m=size(X,2);
+%   m=size(X,2);
   
   % initialize objective value and gradient.
-  f = 0;
-  g = zeros(size(theta));
+%   f = 0;
+%   g = zeros(size(theta));
   
 
   %
@@ -19,3 +19,7 @@ function [f,g] = logistic_regression_vec(theta, X,y)
   %        Store the objective function value in 'f', and the gradient in 'g'.
   %
 %%% YOUR CODE HERE %%%
+
+  hOfxi = sigmoid(theta'*X);
+  f = -(y*log(hOfxi)'+(1-y)*log(1-hOfxi)');
+  g = X*(hOfxi - y)';

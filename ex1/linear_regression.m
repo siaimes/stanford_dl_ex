@@ -8,7 +8,6 @@ function [f,g] = linear_regression(theta, X,y)
   %
   
   m=size(X,2);
-  n=size(X,1);
 
   f=0;
   g=zeros(size(theta));
@@ -22,3 +21,10 @@ function [f,g] = linear_regression(theta, X,y)
   %        computed gradient in 'g'.
   
 %%% YOUR CODE HERE %%%
+
+  for i = 1:m
+      hOfxi =theta'*X(:,i);
+      f = f +(hOfxi - y(i))^2;
+      g = g + X(:,i)*(hOfxi - y(i));
+  end
+  f = f/2;

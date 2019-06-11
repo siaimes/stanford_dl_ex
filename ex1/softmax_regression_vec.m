@@ -1,4 +1,4 @@
-function [f,g] = softmax_regression(theta, X,y)
+function [f,g] = softmax_regression_vec(theta, lambda, X,y)
   %
   % Arguments:
   %   theta - A vector containing the parameter values to optimize.
@@ -15,11 +15,12 @@ function [f,g] = softmax_regression(theta, X,y)
 
   % theta is a vector;  need to reshape to n x num_classes.
   theta=reshape(theta, n, []);
-  num_classes=size(theta,2)+1;
+%   theta(:,end+1) = 0;
+%   num_classes=size(theta,2)+1;
   
   % initialize objective value and gradient.
-  f = 0;
-  g = zeros(size(theta));
+%   f = 0;
+%   g = zeros(size(theta));
 
   %
   % TODO:  Compute the softmax objective function and gradient using vectorized code.
@@ -28,5 +29,13 @@ function [f,g] = softmax_regression(theta, X,y)
   %
 %%% YOUR CODE HERE %%%
   
+  hOfxi = exp(theta' * X);
+  P = bsxfun(@rdivide,hOfxi,sum(hOfxi));
+  Id = sub2ind(size(P), y, 1:m);
+  f = -sum(log(P(Id)));
+  f = f + (lambda/2)*trace((theta'*theta)*(theta'*theta)');
+  P(Id) = P(Id)-1;
+  g = X * P';
+  g = g + (lambda*theta);
   g=g(:); % make gradient a vector for minFunc
 

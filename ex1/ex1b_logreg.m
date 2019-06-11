@@ -1,3 +1,11 @@
+clear
+
+% Using functions
+% functions = [false, false];
+% functions = [true, false];
+functions = [false, true];
+% functions = [true, true];
+
 addpath ../common
 addpath ../common/minFunc_2012/minFunc
 addpath ../common/minFunc_2012/minFunc/compiled
@@ -22,16 +30,20 @@ n=size(train.X,1);
 % Train logistic regression classifier using minFunc
 options = struct('MaxIter', 100);
 
-% First, we initialize theta to some small random values.
-theta = rand(n,1)*0.001;
-
 % Call minFunc with the logistic_regression.m file as the objective function.
 %
 % TODO:  Implement batch logistic regression in the logistic_regression.m file!
 %
-tic;
-theta=minFunc(@logistic_regression, theta, options, train.X, train.y);
-fprintf('Optimization took %f seconds.\n', toc);
+% Set functions(1) as true to run your looping over code.
+if functions(1) == true
+    % First, we initialize theta to some small random values.
+    theta = rand(n,1)*0.001;
+%     % Gradient Checking
+%     average_error = grad_check(@logistic_regression, theta, train.X, train.y)
+    tic;
+    theta = minFunc(@logistic_regression, theta, options, train.X, train.y);
+    time1 = toc;
+end
 
 % Now, call minFunc again with logistic_regression_vec.m as objective.
 %
@@ -39,14 +51,29 @@ fprintf('Optimization took %f seconds.\n', toc);
 % MATLAB's vectorization features to speed up your code.  Compare the running
 % time for your logistic_regression.m and logistic_regression_vec.m implementations.
 %
-% Uncomment the lines below to run your vectorized code.
-%theta = rand(n,1)*0.001;
-%tic;
-%theta=minFunc(@logistic_regression_vec, theta, options, train.X, train.y);
-%fprintf('Optimization took %f seconds.\n', toc);
+% Set functions(2) as true to run your vectorized code.
+if functions(2) == true
+    % First, we initialize theta to some small random values.
+    theta = rand(n,1)*0.001;
+%     % Gradient Checking
+%     average_error = grad_check(@logistic_regression_vec, theta, train.X, train.y)
+    tic;
+    theta = minFunc(@logistic_regression_vec, theta, options, train.X, train.y);
+    time2 = toc;
+end
+
+% print the running time.
+if exist('time1','var') && exist('time2','var')
+    fprintf('Optimization took %f %f seconds respectively.\n', time1, time2);
+elseif exist('time1','var')
+    fprintf('Optimization took %f seconds.\n', time1);
+elseif exist('time2','var')
+    fprintf('Optimization took %f seconds.\n', time2);
+else
+    error('arg errer!');
+end
 
 % Print out training accuracy.
-tic;
 accuracy = binary_classifier_accuracy(theta,train.X,train.y);
 fprintf('Training accuracy: %2.1f%%\n', 100*accuracy);
 
